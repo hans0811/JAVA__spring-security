@@ -2,7 +2,11 @@ package com.hanssecurity.uaa.rest;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 /**
  * @author hans
@@ -27,6 +31,21 @@ public class UserResource {
     @PutMapping("/greeting/{name}")
     public String putGreeting(@PathVariable String name){
         return "Hello world, " + name;
+    }
+
+//    @GetMapping("/principal")
+//    public Authentication getPrincipal() {
+//        return SecurityContextHolder.getContext().getAuthentication();
+//    }
+
+//    @GetMapping("/principal")
+//    public Authentication getPrincipal(Authentication authentication) {
+//        return authentication;
+//    }
+
+    @GetMapping("/principal")
+    public Principal getPrincipal(Principal principal) {
+        return principal;
     }
 
     @Data

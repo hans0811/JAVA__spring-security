@@ -33,6 +33,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
+import javax.sql.DataSource;
 import java.util.Map;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -49,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ObjectMapper objectMapper;
     private final SecurityProblemSupport securityProblemSupport;
+    private final DataSource dataSource;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -67,27 +69,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.ignoringAntMatchers("/authorize/**", "/admin/**", "/api/**"))
                 .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable);
+                .httpBasic(Customizer.withDefaults());
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers( "/error/**");
+                .antMatchers( "/error/**", "/h2-console/**");
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .passwordEncoder(passwordEncoder())
-                .withUser("user")
-                .password("{bcrypt}$2a$10$jhS817qUHgOR4uQSoEBRxO58.rZ1dBCmCTjG8PeuQAX4eISf.zowm")
-                .roles("USER", "ADMIN")
-                .and()
-                .withUser("old_user")
-                .password("{SHA-1}7ce0359f12857f2a90c7de465f40a95f01cb5da9")
-                .roles("USER");
+        auth.jdbcAuthentication()
+                //.withDefaultSchema()
+                .dataSource(dataSource)
+                .usersByUsernameQuery("select username, password, enabled from mooc_users where username = ?")
+                .authoritiesByUsernameQuery("select username, authority from mooc_authorities where username = ?")
+                .passwordEncoder(passwordEncoder());
+//                .withUser("user")
+//                .password("{bcrypt}$2a$10$jhS817qUHgOR4uQSoEBRxO58.rZ1dBCmCTjG8PeuQAX4eISf.zowm")
+//                .roles("USER", "ADMIN")
+//                .and()
+//                .withUser("old_user")
+//                .password("{SHA-1}7ce0359f12857f2a90c7de465f40a95f01cb5da9")
+//                .roles("USER");
     }
 
     @Bean
