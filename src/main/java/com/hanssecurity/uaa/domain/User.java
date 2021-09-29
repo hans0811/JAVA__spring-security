@@ -1,19 +1,22 @@
 package com.hanssecurity.uaa.domain;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Set;
 
 /**
  * @author hans
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@With
 @Data
 @Entity
 @Table(name="mooc_users")
@@ -24,6 +27,7 @@ public class User implements UserDetails, Serializable {
     private Long id;
     @Column(length = 50, unique = true, nullable = false)
     private String username;
+    @JsonIgnore
     @Column(name = "password_hash", length = 80, unique = true)
     private String password;
     @Column(length = 255, unique = true, nullable = false)

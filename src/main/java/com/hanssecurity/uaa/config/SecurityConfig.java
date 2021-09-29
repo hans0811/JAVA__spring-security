@@ -2,6 +2,7 @@ package com.hanssecurity.uaa.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanssecurity.uaa.security.filter.RestAuthenticationFilter;
+import com.hanssecurity.uaa.security.filter.userdetails.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -50,7 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ObjectMapper objectMapper;
     private final SecurityProblemSupport securityProblemSupport;
-    private final DataSource dataSource;
+    //private final DataSource dataSource;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -81,11 +83,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
+        auth.userDetailsService(userDetailsServiceImpl)
                 //.withDefaultSchema()
-                .dataSource(dataSource)
-                .usersByUsernameQuery("select username, password, enabled from mooc_users where username = ?")
-                .authoritiesByUsernameQuery("select username, authority from mooc_authorities where username = ?")
+//                .dataSource(dataSource)
+//                .usersByUsernameQuery("select username, password, enabled from mooc_users where username = ?")
+//                .authoritiesByUsernameQuery("select username, authority from mooc_authorities where username = ?")
                 .passwordEncoder(passwordEncoder());
 //                .withUser("user")
 //                .password("{bcrypt}$2a$10$jhS817qUHgOR4uQSoEBRxO58.rZ1dBCmCTjG8PeuQAX4eISf.zowm")
