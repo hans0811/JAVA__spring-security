@@ -1,16 +1,77 @@
 package com.hanssecurity.uaa.domain;
 
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author hans
  */
 @Data
-public class User implements Serializable {
+@Entity
+@Table(name="mooc_users")
+public class User implements UserDetails, Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(length = 50, unique = true, nullable = false)
     private String username;
+    @Column(name = "password_hash", length = 80, unique = true)
     private String password;
+    @Column(length = 255, unique = true, nullable = false)
     private String email;
+    @Column(length = 11, unique = true, nullable = false)
+    private String mobile;
+    @Column(length = 50)
     private String name;
+    @Column(nullable = false)
+    private boolean enabled;
+    @Column(name="account_non_expired", nullable = false)
+    private boolean accountNonExpired;
+    @Column(name="account_non_locked", nullable = false)
+    private boolean accountNonLocked;
+    @Column(name="credentials_non_Expired", nullable = false)
+    private boolean credentialsNonExpired;
+
+//    join the table
+    @ManyToMany
+    @Fetch(FetchMode.JOIN)
+    @JoinTable(name = "mooc_users_roles",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name= "role_id", referencedColumnName=  "id")}
+    )
+    private Set<Role> authorities;
+
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return null;
+//    }
+
+//    @Override
+//    public boolean isAccountNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isEnabled() {
+//        return false;
+//    }
 }
