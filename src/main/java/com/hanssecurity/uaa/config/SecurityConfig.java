@@ -1,7 +1,10 @@
 package com.hanssecurity.uaa.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hanssecurity.uaa.security.auth.ldap.LDAPMultiAuthenticationProvider;
+import com.hanssecurity.uaa.security.auth.ldap.LDAPUserRepo;
 import com.hanssecurity.uaa.security.filter.RestAuthenticationFilter;
+import com.hanssecurity.uaa.security.filter.userdetails.UserDetailPasswordServiceImpl;
 import com.hanssecurity.uaa.security.filter.userdetails.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +27,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
@@ -53,6 +58,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final SecurityProblemSupport securityProblemSupport;
     //private final DataSource dataSource;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final UserDetailPasswordServiceImpl userDetailsPasswordService;
+    private final LDAPUserRepo ldapUserRepo;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -83,19 +90,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsServiceImpl)
-                //.withDefaultSchema()
-//                .dataSource(dataSource)
-//                .usersByUsernameQuery("select username, password, enabled from mooc_users where username = ?")
-//                .authoritiesByUsernameQuery("select username, authority from mooc_authorities where username = ?")
-                .passwordEncoder(passwordEncoder());
-//                .withUser("user")
-//                .password("{bcrypt}$2a$10$jhS817qUHgOR4uQSoEBRxO58.rZ1dBCmCTjG8PeuQAX4eISf.zowm")
-//                .roles("USER", "ADMIN")
-//                .and()
-//                .withUser("old_user")
-//                .password("{SHA-1}7ce0359f12857f2a90c7de465f40a95f01cb5da9")
-//                .roles("USER");
+        // set 2 providers
+        auth.authenticationProvider(daoAuthenticationProvider());
+        auth.authenticationProvider(ldapMultiAuthenticationProvider());
+
+    }
+
+    @Bean
+    LDAPMultiAuthenticationProvider ldapMultiAuthenticationProvider() {
+        val ldapMultiAuthenticationProvider = new LDAPMultiAuthenticationProvider(ldapUserRepo);
+        return ldapMultiAuthenticationProvider;
+    }
+
+    @Bean
+    DaoAuthenticationProvider daoAuthenticationProvider() {
+        val daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsServiceImpl);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsPasswordService(userDetailsPasswordService);
+        return daoAuthenticationProvider;
     }
 
     @Bean

@@ -1,6 +1,7 @@
 package com.hanssecurity.uaa.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hanssecurity.uaa.security.auth.ldap.LDAPMultiAuthenticationProvider;
 import com.hanssecurity.uaa.security.filter.RestAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -31,6 +34,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Order(100)
 public class LoginSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final DaoAuthenticationProvider daoAuthenticationProvider;
+    private final LDAPMultiAuthenticationProvider ldapMultiAuthenticationProvider;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -54,6 +59,14 @@ public class LoginSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .anyRequest().authenticated());
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // set 2 providers
+        auth.authenticationProvider(daoAuthenticationProvider);
+        auth.authenticationProvider(ldapMultiAuthenticationProvider);
+
     }
 
     @Override
