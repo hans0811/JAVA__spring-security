@@ -20,6 +20,11 @@ public class AppProperties {
     @Getter
     @Setter
     public static class Jwt {
+
+        // custom setting header and prefix
+        private String header = "Authorization";
+        private String prefix = "Beaeer ";
+
         // Access Token
         private Long accessTokenExpireTime = 60_000L;
         // Access Refresh Token

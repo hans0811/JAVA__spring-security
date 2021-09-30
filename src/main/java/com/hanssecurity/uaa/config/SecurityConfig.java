@@ -6,6 +6,7 @@ import com.hanssecurity.uaa.security.auth.ldap.LDAPUserRepo;
 import com.hanssecurity.uaa.security.filter.RestAuthenticationFilter;
 import com.hanssecurity.uaa.security.filter.userdetails.UserDetailPasswordServiceImpl;
 import com.hanssecurity.uaa.security.filter.userdetails.UserDetailsServiceImpl;
+import com.hanssecurity.uaa.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -60,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final UserDetailPasswordServiceImpl userDetailsPasswordService;
     private final LDAPUserRepo ldapUserRepo;
+    private final JwtFilter jwtFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -76,6 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/api/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.ignoringAntMatchers("/authorize/**", "/admin/**", "/api/**"))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults());
