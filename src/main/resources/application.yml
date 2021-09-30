@@ -24,6 +24,13 @@ spring:
     active: "@spring.profiles.active@"
   resources:
     add-mappings: false
+hans:
+  jwt:
+    access-token-expire-time: 300000
+    header: Authorization
+    prefix: "Bearer "
+    refresh-token-expire-time: 2592000000
+
 
 #  security:
 #    user:

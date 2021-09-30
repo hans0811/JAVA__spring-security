@@ -1,5 +1,6 @@
 package com.hanssecurity.uaa.util;
 
+import com.hanssecurity.uaa.config.AppProperties;
 import com.hanssecurity.uaa.domain.Role;
 import com.hanssecurity.uaa.domain.User;
 import io.jsonwebtoken.Jwts;
@@ -25,7 +26,7 @@ class JwtUtilTest {
 
     @BeforeEach
     public void setup() {
-        jwtUtil = new JwtUtil();
+        jwtUtil = new JwtUtil(new AppProperties());
     }
 
     @Test
@@ -41,7 +42,8 @@ class JwtUtilTest {
                         .authorities(authorities)
                         .build();
         // create jwt
-        val token = jwtUtil.createJwtToken(user);
+        //val token = jwtUtil.createJwtToken(user, JwtUtil.key);
+        val token = jwtUtil.createAccessToken(user);
 
         // resolve
         val parsedClaims = Jwts.parserBuilder()
