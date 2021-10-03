@@ -44,3 +44,35 @@ Content-Type: application/json
 # @name principalUser
 GET {{host}}/api/principal Http/1.1
 Authorization: Basic user 12345678
+
+###
+# @name principaOldlUser
+GET {{host}}/api/principal Http/1.1
+Authorization: Basic old_user abcd1234
+
+###
+# @name principaOldlUser
+GET {{host}}/api/principal Http/1.1
+Authorization: Basic zhaoliu 123
+
+###
+# @name principaOldlUser
+GET {{host}}/api/principal Http/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJtb29jIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJzdWIiOiJ1c2VyIiwiaWF0IjoxNjMzMDQ3OTA5LCJleHAiOjE2MzMwNDgyMDl9.g6HT6akYK92rzcYtVbUKX05ljgAJe8Omxk3DY9EKJzLU5B8j0Sn7w2pBQjod_RZ6cMAAO_YYDD7U-SRM9cFaAg
+
+###
+# @name userLogin
+POST {{host}}/authorize/token
+Content-Type: application/json
+
+{
+    "username": "user",
+    "password": "12345678"
+}
+
+@accessToken = {{userLogin.response.body.accessToken}}
+@refreshToken = {{userLogin.response.body.refreshToken}}
+###
+
+POST {{host}}/authorize/token/refresh?refreshToken={{refreshToken}}
+Authorization: Bearer {{accessToken}}

@@ -41,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
             // is empty
             validateToken(request)
                     .filter(claims -> claims.get("authorities") != null)
-                    .ifPresentOrElse( this::setUpSoringAuthentication, // have value
+                    .ifPresentOrElse( this::setUpSpringAuthentication, // have value
                                       SecurityContextHolder::clearContext); // empty
         }
 
@@ -49,23 +49,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
     }
 
-    private void setUpSoringAuthentication(Claims claims) {
+    private void setUpSpringAuthentication(Claims claims) {
         // have value
         val rawList = CollectionUtils.convertObjectToList(claims.get("authorities"));
 
         // userDetails type -> Collection<? extends GrantedAuthority> getAuthorities();
         val authorities = rawList.stream()
-                                            .map(String::valueOf)
-                                            .map(strAuthority -> new SimpleGrantedAuthority(strAuthority))
-                                            .collect(toList());
+                .map(String::valueOf)
+                .map(SimpleGrantedAuthority::new)
+                .collect(toList());
         val authentication = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private Optional<Claims> validateToken(HttpServletRequest req) {
         // replace prefix string
-        String jwtToken = req.getHeader(appProperties.getJwt().getHeader().replace(appProperties.getJwt().getPrefix(), ""));
+        String jwtToken = req.getHeader(appProperties.getJwt().getHeader()).replace(appProperties.getJwt().getPrefix(), "");
         try{
             return Optional.of(Jwts.parserBuilder().setSigningKey(JwtUtil.key).build().parseClaimsJws(jwtToken).getBody());
 
