@@ -3,6 +3,7 @@ package com.hanssecurity.uaa.domain.dto;
 import com.hanssecurity.uaa.annotaion.PasswordMatch;
 import com.hanssecurity.uaa.annotaion.ValidEmail;
 import com.hanssecurity.uaa.annotaion.ValidPassword;
+import com.hanssecurity.uaa.config.Constants;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -19,6 +20,10 @@ public class UserDto implements Serializable {
     @NotBlank
     @Size(min = 4, max = 50, message = "Username between 4 and 50")
     private String username;
+
+    @Pattern(regexp = Constants.PATTERN_MOBILE)
+    @NotNull
+    private String mobile;
 
     @NotNull
 //    @NotBlank

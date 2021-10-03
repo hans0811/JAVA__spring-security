@@ -76,3 +76,16 @@ Content-Type: application/json
 
 POST {{host}}/authorize/token/refresh?refreshToken={{refreshToken}}
 Authorization: Bearer {{accessToken}}
+###
+
+POST {{host}}/authorize/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "John",
+    "name": "Olivia",
+    "email": "john@abc.com",
+    "mobile": "13912341234",
+    "password": "Abcd123$",
+    "matchingPassword": "Abcd123$"
+}

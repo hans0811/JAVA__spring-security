@@ -1,12 +1,15 @@
 package com.hanssecurity.uaa.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hanssecurity.uaa.config.Constants;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Set;
 

@@ -1,8 +1,10 @@
 package com.hanssecurity.uaa.rest;
 
 import com.hanssecurity.uaa.domain.Auth;
+import com.hanssecurity.uaa.domain.User;
 import com.hanssecurity.uaa.domain.dto.LoginDto;
 import com.hanssecurity.uaa.domain.dto.UserDto;
+import com.hanssecurity.uaa.exception.DuplicateProblem;
 import com.hanssecurity.uaa.service.UserService;
 import com.hanssecurity.uaa.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +26,30 @@ public class AuthorizeResource {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public UserDto register(@Valid @RequestBody UserDto userDto){
-        return userDto;
+    public void register(@Valid @RequestBody UserDto userDto){
+        // 1. check username, email, mobile is unique
+        if(userService.isUsernameExisted(userDto.getUsername())){
+            throw new DuplicateProblem("username has been used");
+        }
+
+        if(userService.isUsernameExisted(userDto.getEmail())){
+            throw new DuplicateProblem("Email has been used");
+        }
+
+        if(userService.isUsernameExisted(userDto.getMobile())){
+            throw new DuplicateProblem("Mobile has been used");
+        }
+
+        val user = User.builder()
+                .username(userDto.getUsername())
+                .name(userDto.getName())
+                .email(userDto.getEmail())
+                .mobile(userDto.getMobile())
+                .password(userDto.getPassword())
+                .build();
+
+        // 2. userDto convert to User, then save and give default Role(ROLE_USER)
+        userService.register(user);
     }
 
     @PostMapping("/token")
