@@ -48,6 +48,21 @@ public class User implements UserDetails, Serializable {
     @Column(name="credentials_non_Expired", nullable = false)
     private boolean credentialsNonExpired;
 
+    /**
+     * Whether use 2 steps balisation
+     */
+    @Builder.Default
+    @Column(name = "using_mfa", nullable = false)
+    private boolean usingMfa = false;
+
+    /**
+     * the key is second validation
+     */
+    @JsonIgnore
+    @Column(name = "mfa_key", nullable = false)
+    private String mfaKey;
+
+
 //    join the table
     @ManyToMany
     @Fetch(FetchMode.JOIN)

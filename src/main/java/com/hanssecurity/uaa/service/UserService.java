@@ -6,6 +6,7 @@ import com.hanssecurity.uaa.domain.User;
 import com.hanssecurity.uaa.repository.RoleRepo;
 import com.hanssecurity.uaa.repository.UserRepo;
 import com.hanssecurity.uaa.util.JwtUtil;
+import com.hanssecurity.uaa.util.TotpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,6 +28,7 @@ public class UserService {
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final TotpUtil totpUtil;
 
     @Transactional
     public User register(User user) {
@@ -34,7 +36,8 @@ public class UserService {
                 .map(role -> {
                     val userToSave = user
                             .withAuthorities(Set.of(role))
-                            .withPassword(passwordEncoder.encode(user.getPassword()));
+                            .withPassword(passwordEncoder.encode(user.getPassword()))
+                            .withMfaKey(totpUtil.encodeKeyToString());
                     return userRepo.save(userToSave);
                 })
                 .orElseThrow();
