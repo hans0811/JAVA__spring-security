@@ -9,12 +9,15 @@ import com.hanssecurity.uaa.util.JwtUtil;
 import com.hanssecurity.uaa.util.TotpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -52,6 +55,22 @@ public class UserService {
                 ))
                 .orElseThrow(()-> new BadCredentialsException("username or password not exist"));
     }
+
+    public Optional<User> findOptionalByUsernameAndPassword(String username, String password) {
+        return userRepo.findOptionalByUsername(username)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
+    }
+
+    public UserDetails updatePassword(User user, String newPassword) {
+        return userRepo.findOptionalByUsername(user.getUsername())
+                .map(u ->  (UserDetails) userRepo.save(u.withPassword(newPassword)))
+                .orElse(user);
+    }
+
+    public Optional<String> createTotp(String key) {
+        return totpUtil.createTotp(key);
+    }
+
 
     /**
      * check username is exist

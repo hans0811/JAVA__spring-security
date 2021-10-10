@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
  * @author hans
  */
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class LeanCloudConfig {
 
     private final AppProperties appProperties;

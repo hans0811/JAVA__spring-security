@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @author hans
  */
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class AliConfig {
 
     private final AppProperties appProperties;

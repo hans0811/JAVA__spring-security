@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "mooc.sms-provider", name = "name", havingValue = "lean-cloud")
+//@ConditionalOnProperty(prefix = "mooc.sms-provider", name = "name", havingValue = "lean-cloud")
 @Service
 public class SmsServiceLeanCloudSmsImp implements SmsService{
     @Override

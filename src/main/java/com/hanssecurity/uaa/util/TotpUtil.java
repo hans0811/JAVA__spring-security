@@ -95,4 +95,8 @@ public class TotpUtil {
         return new SecretKeySpec(Base64.getDecoder().decode(strKey), totp.getAlgorithm());
     }
 
+    public long getTimeStepInSeconds() {
+        return TIME_STEP;
+    }
+
 }

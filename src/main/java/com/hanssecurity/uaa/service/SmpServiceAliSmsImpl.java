@@ -19,7 +19,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 @Setter
 @RequiredArgsConstructor
 // hans.sms-provider.name = leancloud
-@ConditionalOnProperty(prefix = "hans.sms-provider", name="name", havingValue = "ali")
+//@ConditionalOnProperty(prefix = "hans.sms-provider", name="name", havingValue = "ali")
 public class SmpServiceAliSmsImpl implements SmsService{
 
     private final IAcsClient client;
