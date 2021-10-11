@@ -1,0 +1,100 @@
+@password=0ac6d5d8-ccaf-41b2-bb57-fd29e29a64fa
+
+###
+GET http://localhost:8080/api/greeting HTTP/1.1
+Authorization: Basic user {{password}}
+###
+POST http://localhost:8080/api/greeting?name=John
+Authorization: Basic user {{password}}
+Content-Type: application/json
+
+{
+    "gender": "man",
+    "idNo": "123456789"
+}
+
+###
+PUT http://localhost:8080/api/greeting/John
+Authorization: Basic user {{password}}
+
+###
+POST http://localhost:8080/authorize/login
+Content-Type: application/json
+
+{
+    "username": "user",
+    "password": "12345678"
+}
+
+###
+# @name register
+POST {{host}}/authorize/register
+Accept-Language: zh-TW
+Content-Type: application/json
+
+{
+    "name": "John",
+    "username": "test",
+    "password": "12345",
+    "matchingPassword": "12345",
+    "email": "zs@local"
+}
+
+###
+# @name principalUser
+GET {{host}}/api/principal Http/1.1
+Authorization: Basic user 12345678
+
+###
+# @name principaOldlUser
+GET {{host}}/api/principal Http/1.1
+Authorization: Basic old_user abcd1234
+
+###
+# @name principaOldlUser
+GET {{host}}/api/principal Http/1.1
+Authorization: Basic zhaoliu 123
+
+###
+# @name principaOldlUser
+GET {{host}}/api/principal Http/1.1
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJtb29jIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJzdWIiOiJ1c2VyIiwiaWF0IjoxNjMzMDQ3OTA5LCJleHAiOjE2MzMwNDgyMDl9.g6HT6akYK92rzcYtVbUKX05ljgAJe8Omxk3DY9EKJzLU5B8j0Sn7w2pBQjod_RZ6cMAAO_YYDD7U-SRM9cFaAg
+
+###
+# @name userLogin
+POST {{host}}/authorize/token
+Content-Type: application/json
+
+{
+    "username": "user",
+    "password": "12345678"
+}
+
+@accessToken = {{userLogin.response.body.accessToken}}
+@refreshToken = {{userLogin.response.body.refreshToken}}
+###
+
+POST {{host}}/authorize/token/refresh?refreshToken={{refreshToken}}
+Authorization: Bearer {{accessToken}}
+###
+
+POST {{host}}/authorize/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "John",
+    "name": "Olivia",
+    "email": "john@abc.com",
+    "mobile": "13912341234",
+    "password": "Abcd123$",
+    "matchingPassword": "Abcd123$"
+}
+
+###
+POST http://localhost:8080/authorize/token
+Content-Type: application/json; charset=utf-8
+
+{
+    "username": "user",
+    "password": "12345678"
+}
