@@ -48,7 +48,7 @@ public class UserService {
 
     public Auth login(String username, String password) throws AuthenticationException {
         return userRepo.findOptionalByUsername(username)
-                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
+                .filter(user -> passwordEncoder.matches(password, passwordEncoder.encode(user.getPassword())))
                 .map(user -> new Auth(
                         jwtUtil.createAccessToken(user),
                         jwtUtil.createRefreshToken(user)

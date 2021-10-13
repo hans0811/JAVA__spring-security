@@ -64,13 +64,16 @@ public class User implements UserDetails, Serializable {
 
 
 //    join the table
+    @Getter
+    @JsonIgnore
     @ManyToMany
     @Fetch(FetchMode.JOIN)
-    @JoinTable(name = "mooc_users_roles",
+    @JoinTable(
+            name = "mooc_users_roles",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name= "role_id", referencedColumnName=  "id")}
-    )
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private Set<Role> authorities;
+
 
 //    @Override
 //    public Collection<? extends GrantedAuthority> getAuthorities() {

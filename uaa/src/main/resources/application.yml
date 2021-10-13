@@ -12,14 +12,22 @@ spring:
   application:
     name: uaa
   # i18n
+  cache:
+    type: redis
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password: mypass
+    timeout: 60000
+  #  datasource:
+#    initialization-mode: embedded
   messages:
     always-use-message-format: false
     basename: messages
     encoding: UTF-8
     fallback-to-system-locale: true
     use-code-as-default-message: false
-  datasource:
-    initialization-mode: embedded
   profiles:
     active: "@spring.profiles.active@"
   resources:
@@ -36,19 +44,24 @@ hans:
   sms-provider:
     name: ali
   email-provider:
-    api-key: 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
+    api-key: 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
     name: api
   mail:
-    host: ${SMTP_HOST}
-    password: ${SMTP_PASSWORD}
-    port: ${SMTP_PORT}
+    host: smtp.sendgrid.net
+    password: apikey
+    port: 587
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-    username: ${SMTP_USERNAME}
+    username: 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
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+  resources:
+    add-mappings: true
 
 
 #  security:

@@ -28,7 +28,7 @@ public class EmailServiceApiImpl implements EmailService{
 
     @Override
     public void send(String email, String msg) {
-        val from = new Email("service@immoc.com");
+        val from = new Email("prideofyou@hotmail.com");
         val subject = "Hans website login code";
         val to = new Email(email);
         val content = new Content("text/plain","valid code: " + msg );

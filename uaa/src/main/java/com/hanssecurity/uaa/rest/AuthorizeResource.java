@@ -30,6 +30,7 @@ import java.nio.file.AccessDeniedException;
 @RequiredArgsConstructor
 @RequestMapping("/authorize")
 @RestController
+@CrossOrigin(value = "http://localhost:4001")
 public class AuthorizeResource {
 
     private final UserService userService;
@@ -70,7 +71,7 @@ public class AuthorizeResource {
         return userService.findOptionalByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword())
                     .map(user -> {
                         // 1. upgrade password
-                        userService.updatePassword(user, loginDto.getPassword());
+                        //userService.updatePassword(user, loginDto.getPassword());
                         // 2. validate enable
                         if(!user.isEnabled()){
                             throw new UserNotEnabledProblem();
@@ -105,9 +106,9 @@ public class AuthorizeResource {
                 .flatMap(user -> userService.createTotp(user.getMfaKey()).map(totp -> Pair.of(user, totp)))
                 .ifPresentOrElse(pair -> {
                     if(sendTotpDTO.getMfaType() == MfaType.SMS) {
-                        smsService.send(pair.getFirst().getMobile(), pair.getSecond());
+                        smsService.send(pair.getFirst().getEmail(), pair.getSecond());
                     }else{
-                        emailService.send(pair.getFirst().getMobile(), pair.getSecond());
+                        emailService.send(pair.getFirst().getEmail(), pair.getSecond());
                     }
 
                 }, () -> {

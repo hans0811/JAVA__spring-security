@@ -14,6 +14,8 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +28,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
@@ -38,9 +41,14 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -62,6 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailPasswordServiceImpl userDetailsPasswordService;
     private final LDAPUserRepo ldapUserRepo;
     private final JwtFilter jwtFilter;
+    private final Environment environment;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -72,6 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(securityProblemSupport)
                         .accessDeniedHandler(securityProblemSupport))
+                .cors(cors -> cors.configurationSource(corsConfigurerSource()))
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .antMatchers("/authorize/**").permitAll()
                         .antMatchers("/admin/**").hasRole("ADMIN")
@@ -173,5 +183,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             res.getWriter().println(objectMapper.writeValueAsString(auth));
             log.debug("认证成功");
         };
+    }
+
+    /**
+     * Add CROS setting
+     */
+    @Bean
+    CorsConfigurationSource corsConfigurerSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        if(environment.acceptsProfiles(Profiles.of("dev"))){
+            // in dev mode
+            corsConfiguration.addAllowedOrigin("http://localhost:4001");
+        }else{
+            corsConfiguration.addAllowedOrigin("https:uaa.immoc.com");
+        }
+
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTION"));
+        corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+        // give open header
+        corsConfiguration.addExposedHeader("X-Authenticate");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
     }
 }
