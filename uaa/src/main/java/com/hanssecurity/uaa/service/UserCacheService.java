@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Service
 public class UserCacheService {
+
     private final RedissonClient redisson;
     private final TotpUtil totpUtil;
     private final CryptoUtil cryptoUtil;

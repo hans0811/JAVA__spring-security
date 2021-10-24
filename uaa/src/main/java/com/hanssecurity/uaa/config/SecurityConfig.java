@@ -84,8 +84,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors(cors -> cors.configurationSource(corsConfigurerSource()))
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .antMatchers("/authorize/**").permitAll()
+                        //.antMatchers("/api/users/**").access("hasRole('ADMIN') or hasRole('USER')")
+                        //.antMatchers("/api/users/{username}").access("hasRole('ADMIN') or authentication.name.equals(#username)")
+                        .antMatchers("/api/users/{username}").access("hasRole('ADMIN') or @userService.isValidUser(authentication, #username)")
+                        //.antMatchers("/api/**").hasRole("USER")
                         .antMatchers("/admin/**").hasRole("ADMIN")
-                        .antMatchers("/api/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(jwtFilter, UsernamePasswordAuthenticationFilter.class)

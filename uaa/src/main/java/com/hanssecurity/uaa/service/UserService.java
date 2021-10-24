@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -97,5 +98,9 @@ public class UserService {
      */
     public boolean isMobileExisted(String Mobile) {
         return userRepo.countByMobile(Mobile) > 0;
+    }
+
+    public boolean isValidUser(Authentication authentication, String username){
+        return authentication.getName().equals(username);
     }
 }

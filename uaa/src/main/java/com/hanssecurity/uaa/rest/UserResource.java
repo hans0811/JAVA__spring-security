@@ -48,6 +48,11 @@ public class UserResource {
         return principal;
     }
 
+    @GetMapping("/users/{username}")
+    public String getCurrentUsername(@PathVariable String username){
+        return "Hello, " + username;
+    }
+
     @Data
     static class Profile {
         private String gender;

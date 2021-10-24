@@ -2,6 +2,23 @@ logging:
   pattern:
     console: '%clr(%d{E HH:mm:ss.SSS}){blue} %clr(%-5p) %clr(${PID}){faint} %clr(---){faint}
               %clr([%8.15t]){cyan} %clr(%-40.40logger{0}){blue} %clr(:){red} %clr(%m){faint}%n'
+hans:
+  jwt:
+    access-token-expire-time: 300000
+    header: Authorization
+    prefix: "Bearer "
+    refresh-token-expire-time: 2592000000
+    key: ${JWT_KEY}
+    refresh-key: ${JWT_REFRESH_KEY}
+  ali:
+    api-key: ${ALI_API_KEY}
+    api-sercrt: ${ALI_API_SECRET}
+  sms-provider:
+    name: ali
+  email-provider:
+    api-key: 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
+    name: api
+
 server:
   error:
     whitelabel:
@@ -12,40 +29,16 @@ spring:
   application:
     name: uaa
   # i18n
-  cache:
-    type: redis
-  redis:
-    database: 0
-    host: localhost
-    port: 6379
-    password: mypass
-    timeout: 60000
-  #  datasource:
-#    initialization-mode: embedded
-  messages:
-    always-use-message-format: false
-    basename: messages
-    encoding: UTF-8
-    fallback-to-system-locale: true
-    use-code-as-default-message: false
-  profiles:
-    active: "@spring.profiles.active@"
-  resources:
-    add-mappings: false
-hans:
-  jwt:
-    access-token-expire-time: 300000
-    header: Authorization
-    prefix: "Bearer "
-    refresh-token-expire-time: 2592000000
-  ali:
-    api-key: ${ALI_API_KEY}
-    api-sercrt: ${ALI_API_SECRET}
-  sms-provider:
-    name: ali
-  email-provider:
-    api-key: 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
-    name: api
+#  cache:
+#    type: redis
+#  redis:
+#    database: 0
+#    host: localhost
+#    port: 6379
+#    password: mypass
+#    timeout: 60000
+  datasource:
+    initialization-mode: embedded
   mail:
     host: smtp.sendgrid.net
     password: apikey
@@ -57,11 +50,27 @@ hans:
           starttls:
             enable: true
     username: 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
+  messages:
+    always-use-message-format: false
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: true
+    use-code-as-default-message: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+  profiles:
+    active: "@spring.profiles.active@"
   redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
+    host: localhost
+    port: 6379
+    password: mypass
   resources:
     add-mappings: true
+
+
+
+#    host: ${REDIS_HOST:localhost}
+#    port: ${REDIS_PORT:6379}
 
 
 #  security:

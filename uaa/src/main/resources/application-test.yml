@@ -40,4 +40,15 @@ spring:
       ldif: classpath:test-ldap-server.ldif
       port: 8389
     urls: ldap://localhost:8389/
+  mail:
+    host: localhost
+    password: password
+    port: 2525
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    username: username
   profiles: test

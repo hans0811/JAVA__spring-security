@@ -14,6 +14,7 @@ import com.hanssecurity.uaa.service.UserCacheService;
 import com.hanssecurity.uaa.service.UserService;
 import com.hanssecurity.uaa.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
@@ -27,9 +28,10 @@ import java.nio.file.AccessDeniedException;
 /**
  * @author hans
  */
+@Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/authorize")
 @RestController
+@RequestMapping("/authorize")
 @CrossOrigin(value = "http://localhost:4001")
 public class AuthorizeResource {
 
