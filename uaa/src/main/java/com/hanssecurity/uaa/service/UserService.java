@@ -62,6 +62,10 @@ public class UserService {
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
 
+    public Optional<User> findOptionalByEmail(String email) {
+        return userRepo.findOptionalByEmail(email);
+    }
+
     public UserDetails updatePassword(User user, String newPassword) {
         return userRepo.findOptionalByUsername(user.getUsername())
                 .map(u ->  (UserDetails) userRepo.save(u.withPassword(newPassword)))

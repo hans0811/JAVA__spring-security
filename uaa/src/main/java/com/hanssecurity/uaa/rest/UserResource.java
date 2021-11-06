@@ -1,7 +1,12 @@
 package com.hanssecurity.uaa.rest;
 
+import com.hanssecurity.uaa.domain.User;
+import com.hanssecurity.uaa.service.UserService;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +18,12 @@ import java.security.Principal;
  */
 
 // http://localhost:8080/api/greeting
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class UserResource {
+
+    private final UserService userService;
 
     @GetMapping("/greeting")
     public String greeting(){
@@ -51,6 +59,20 @@ public class UserResource {
     @GetMapping("/users/{username}")
     public String getCurrentUsername(@PathVariable String username){
         return "Hello, " + username;
+    }
+
+
+    @GetMapping("/users/manager")
+    public String getManagerResource(){
+        return "hi,";
+    }
+
+
+    //@PreAuthorize("hasRole('ADMIN')")
+    @PostAuthorize("returnObject.username == authentication.principal.username")
+    @GetMapping("/users/by-email/{email}")
+    public User getUserByEmail(String email) {
+        return userService.findOptionalByEmail(email).orElseThrow();
     }
 
     @Data

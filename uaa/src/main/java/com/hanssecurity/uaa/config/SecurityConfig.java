@@ -18,6 +18,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -75,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .requestMatchers(req -> req.mvcMatchers("/api/**", "/admin/**", "/authorize/**"))
+                //.requestMatchers(req -> req.mvcMatchers("/api/**", "/admin/**", "/authorize/**"))
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling -> exceptionHandling
@@ -83,13 +85,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .accessDeniedHandler(securityProblemSupport))
                 .cors(cors -> cors.configurationSource(corsConfigurerSource()))
                 .authorizeRequests(authorizeRequests -> authorizeRequests
-                        .antMatchers("/authorize/**").permitAll()
+                        .mvcMatchers("/authorize/**").permitAll()
                         //.antMatchers("/api/users/**").access("hasRole('ADMIN') or hasRole('USER')")
                         //.antMatchers("/api/users/{username}").access("hasRole('ADMIN') or authentication.name.equals(#username)")
-                        .antMatchers("/api/users/{username}").access("hasRole('ADMIN') or @userService.isValidUser(authentication, #username)")
+                        //.mvcMatchers("/api/users/{username}").access("hasRole('ADMIN') or @userService.isValidUser(authentication, #username)")
                         //.antMatchers("/api/**").hasRole("USER")
-                        .antMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
+                        .mvcMatchers("/admin/**").hasRole("ADMIN")
+                        .mvcMatchers("/api/users/manager").hasRole("MANAGER")
+                        .mvcMatchers("/api/users/by-email/{email}").hasRole("USER")
+                        .mvcMatchers("/api/users/{username}").access("hasRole('ADMIN') or @userService.isValidUser(authentication, #username)")
+                        .mvcMatchers("/api/**").authenticated()
+                        .anyRequest().denyAll())
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.ignoringAntMatchers("/authorize/**", "/admin/**", "/api/**"))
@@ -209,5 +215,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
+    }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER \n ROLE_MANAGER > ROLE_USER");
+        return roleHierarchy;
+
     }
 }

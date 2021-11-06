@@ -79,7 +79,8 @@ public class SecuredRestAPIIntTests extends BaseIntegrationTest {
                 .authority(ROLE_ADMIN)
                 .build();
         val savedRoleUser = roleRepo.save(roleUser);
-        roleRepo.save(roleAdmin);
+        val savedRoleAdmin = roleRepo.save(roleAdmin);
+
 
         val user = User.builder()
                 .username("user")
@@ -88,7 +89,7 @@ public class SecuredRestAPIIntTests extends BaseIntegrationTest {
                 .name("New User")
                 .email("user@local.dev")
                 .mfaKey(STR_KEY)
-                .authorities(Set.of(savedRoleUser))
+                .authorities(Set.of(savedRoleAdmin))
                 .build();
         userRepo.save(user);
     }
@@ -137,5 +138,23 @@ public class SecuredRestAPIIntTests extends BaseIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
+    @WithMockUser(username = "user")
+    @Test
+    public void givenUserRole_whenQueryUserByEmail_shouldSuccess() throws Exception {
+        mvc.perform(get("/api/users/by-email/{email}", "user@local.dev"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @WithMockUser(username = "user", roles = {"MANAGER"})
+    @Test
+    public void givenRole_whenQueryUserByEmail_shouldSuccess() throws Exception {
+        mvc.perform(get("/api/users/manager"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
 
 }
