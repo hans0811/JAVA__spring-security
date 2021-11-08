@@ -5,13 +5,18 @@ import com.hanssecurity.uaa.config.Constants;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author hans
@@ -72,7 +77,14 @@ public class User implements UserDetails, Serializable {
             name = "mooc_users_roles",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
-    private Set<Role> authorities;
+    private Set<Role> roles;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream().flatMap( role -> Stream.concat(
+                Stream.of(new SimpleGrantedAuthority(role.getRoleName())), role.getPermissions().stream())
+        ).collect(Collectors.toList());
+    }
 
 
 //    @Override
