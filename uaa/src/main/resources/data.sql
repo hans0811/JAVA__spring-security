@@ -3,6 +3,7 @@ delete from mooc_users_roles;
 delete from mooc_permissions;
 delete from mooc_users;
 delete from mooc_roles;
+
 insert into mooc_permissions(id, permission_name, display_name)
 values (1, 'USER_READ', '查询用户信息'),
        (2, 'USER_CREATE', '新建用户'),
@@ -16,4 +17,4 @@ values (1, 'ROLE_USER', '客户端用户', true),
        (2, 'ROLE_ADMIN', '超级管理员', true),
        (3, 'ROLE_STAFF', '管理后台用户', true);
 insert into mooc_users_roles(user_id, role_id) values (1, 1), (1, 2), (1, 3), (2, 1);
-insert into mooc_roles_permissions(role_id, permission_id) values (1, 1), (2, 1), (2, 2), (2, 3), (2, 4);
+insert into mooc_roles_permissions(role_id, permission_id) values (S1, 1), (2, 1), (2, 2), (2, 3), (2, 4);
