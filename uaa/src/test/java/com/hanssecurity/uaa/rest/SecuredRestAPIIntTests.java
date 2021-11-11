@@ -73,10 +73,10 @@ public class SecuredRestAPIIntTests extends BaseIntegrationTest {
         userRepo.deleteAllInBatch();
         roleRepo.deleteAllInBatch();
         val roleUser = Role.builder()
-                .authority(ROLE_USER)
+                //.authority(ROLE_USER)
                 .build();
         val roleAdmin = Role.builder()
-                .authority(ROLE_ADMIN)
+                //.authority(ROLE_ADMIN)
                 .build();
         val savedRoleUser = roleRepo.save(roleUser);
         val savedRoleAdmin = roleRepo.save(roleAdmin);
@@ -89,7 +89,7 @@ public class SecuredRestAPIIntTests extends BaseIntegrationTest {
                 .name("New User")
                 .email("user@local.dev")
                 .mfaKey(STR_KEY)
-                .authorities(Set.of(savedRoleAdmin))
+                //.authorities(Set.of(savedRoleAdmin))
                 .build();
         userRepo.save(user);
     }

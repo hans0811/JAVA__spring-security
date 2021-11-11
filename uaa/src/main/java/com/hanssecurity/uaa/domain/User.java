@@ -30,9 +30,18 @@ import java.util.stream.Stream;
 @Table(name="mooc_users")
 public class User implements UserDetails, Serializable {
 
+
+    /**
+     * 自增长 ID，唯一标识
+     */
+    @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String group;
+
     @Column(length = 50, unique = true, nullable = false)
     private String username;
     @JsonIgnore

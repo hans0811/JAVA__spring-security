@@ -1,5 +1,6 @@
 package com.hanssecurity.uaa.service;
 
+import com.hanssecurity.uaa.annotaion.RoleAdminOrSelfWithUserParam;
 import com.hanssecurity.uaa.config.Constants;
 import com.hanssecurity.uaa.domain.Auth;
 import com.hanssecurity.uaa.domain.User;
@@ -10,6 +11,7 @@ import com.hanssecurity.uaa.util.TotpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -39,12 +41,24 @@ public class UserService {
         return roleRepo.findOptionalByAuthority(Constants.ROLE_USER)
                 .map(role -> {
                     val userToSave = user
-                            .withAuthorities(Set.of(role))
+                            //.withAuthorities(Set.of(role))
                             .withPassword(passwordEncoder.encode(user.getPassword()))
                             .withMfaKey(totpUtil.encodeKeyToString());
                     return userRepo.save(userToSave);
                 })
                 .orElseThrow();
+    }
+
+    /**
+     * save user
+     * hasRole hasAuthority hasAnyRole('ADMIN', 'USER'), hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')
+     * @param user
+     * @return
+     */
+    @Transactional
+    @RoleAdminOrSelfWithUserParam
+    public User saveUser(User user) {
+        return userRepo.save(user);
     }
 
     public Auth login(String username, String password) throws AuthenticationException {
@@ -107,4 +121,5 @@ public class UserService {
     public boolean isValidUser(Authentication authentication, String username){
         return authentication.getName().equals(username);
     }
+
 }

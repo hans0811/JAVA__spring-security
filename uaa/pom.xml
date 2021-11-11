@@ -29,6 +29,25 @@
 <!--    </properties>-->
     <dependencies>
 
+        <!-- Spring Aop       -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <!-- Querydsl 依赖 -->
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+            <version>${querydsl.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-jpa</artifactId>
+            <version>${querydsl.version}</version>
+        </dependency>
+
         <!-- GreenMail 依赖，用于测试 -->
         <dependency>
             <groupId>com.icegreen</groupId>

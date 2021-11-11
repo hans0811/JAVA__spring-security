@@ -36,6 +36,7 @@
     <sendgrid.version>4.7.0</sendgrid.version>
     <greenmail.version>1.5.13</greenmail.version>
     <bootstrap.version>4.5.0</bootstrap.version>
+    <querydsl.version>4.3.1</querydsl.version>
   </properties>
 
 </project>

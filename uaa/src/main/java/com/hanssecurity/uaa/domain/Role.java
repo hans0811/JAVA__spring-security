@@ -1,10 +1,8 @@
 package com.hanssecurity.uaa.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.querydsl.core.annotations.QueryEntity;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,10 +16,14 @@ import java.util.Set;
 /**
  * @author hans
  */
+@With
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"users"})
+@QueryEntity
 @Entity
 @Table(name = "mooc_roles")
 public class Role implements Serializable {
